@@ -22,7 +22,7 @@ This repo was created to provide a simple solution for managing AI models for ev
 This branch is the OpenCode v1 line and requires OpenCode 1.18.0 or later. Pin 0.1.0 explicitly so a future v2 release on the latest dist-tag is never installed into a v1 host:
 
 ```
-opencode plugin opencode-models-manager@0.1.0
+opencode plugin opencode-models-manager@0.1.1
 ```
 
 Once the opencode-v1 dist-tag is published, `opencode-models-manager@opencode-v1` resolves to this line and can replace the pinned version above.
@@ -35,7 +35,7 @@ Add to `~/.config/opencode/opencode.json` (global) or `opencode.json` (project):
 
 ```json
 {
-  "plugin": ["opencode-models-manager@0.1.0"]
+  "plugin": ["opencode-models-manager@0.1.1"]
 }
 ```
 
