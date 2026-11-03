@@ -1,6 +1,6 @@
 {
     "name": "opencode-models-manager",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "type": "module",
     "description": "OpenCode plugin — manage agent models from a single JSON file",
     "author": "RainingDaemons",

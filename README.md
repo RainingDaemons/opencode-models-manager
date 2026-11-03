@@ -55,12 +55,18 @@ Create `.opencode/models.json` in the project root:
 
 ```json
 {
-  "chat": "opencode-go/deepseek-v4.1-flash",
-  "chat2": "opencode-go/mimo-v2.6-flash"
+  "agent": {
+    "chat": "opencode-go/deepseek-v4.1-flash",
+    "chat2": "opencode-go/mimo-v2.6-flash"
+  },
+  "commands": {
+    "document": "opencode-go/deepseek-v4.1-flash",
+    "document2": "opencode-go/mimo-v2.6-flash"
+  }
 }
 ```
 
-Each key is an agent name and each value is a `provider/model` reference. The plugin merges the model into that agent's existing configuration, so prompts, permissions, and other settings are preserved.
+The `agent` section targets agents in `.opencode/agent` and the `commands` section targets commands in `.opencode/commands`. The plugin merges the model into each existing configuration, so prompts, permissions, frontmatter, and other settings are preserved. A flat map such as `{ "chat": "provider/model" }` is still supported and applies to agents.
 
 Invalid entries are logged and skipped. Restart OpenCode after changing `models.json` so the config hook runs again.
 
