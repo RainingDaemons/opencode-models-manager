@@ -1,6 +1,6 @@
 {
     "name": "opencode-models-manager",
-    "version": "0.1.1",
+    "version": "2.0.0",
     "type": "module",
     "description": "OpenCode plugin — manage agent models from a single JSON file",
     "author": "RainingDaemons",
@@ -22,7 +22,7 @@
         "model-manager"
     ],
     "engines": {
-        "opencode": ">=1.18.0"
+        "opencode": ">=2.0.0"
     },
     "main": "./src/models.ts",
     "exports": {
@@ -36,9 +36,17 @@
     ],
     "scripts": {
         "test": "node --test test/models.test.ts",
+        "typecheck": "tsc --noEmit",
         "logo": "node script/logo.mjs"
     },
-    "dependencies": {
-        "@opencode-ai/plugin": "^1.18.1"
+    "peerDependencies": {
+        "@opencode/plugin": "^2.0.0",
+        "effect": "^4.0.0"
+    },
+    "devDependencies": {
+        "@opencode/plugin": "^2.2.5",
+        "@types/node": "^24.0.0",
+        "effect": "4.0.6",
+        "typescript": "^6.0.0"
     }
 }

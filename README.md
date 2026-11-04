@@ -19,13 +19,13 @@ This repo was created to provide a simple solution for managing AI models for ev
 
 ## Installation
 
-This branch is the OpenCode v1 line and requires OpenCode 1.18.0 or later. Pin 0.1.0 explicitly so a future v2 release on the latest dist-tag is never installed into a v1 host:
+The `main` branch is the OpenCode v1 line and requires OpenCode 1.18.0 or later. It is not compatible with OpenCode v2.
 
 ```
 opencode plugin opencode-models-manager@0.1.1
 ```
 
-Once the opencode-v1 dist-tag is published, `opencode-models-manager@opencode-v1` resolves to this line and can replace the pinned version above.
+For OpenCode v2, use the `v2` branch until the 2.x package release is published.
 
 Restart OpenCode after installation.
 
@@ -70,4 +70,17 @@ The `agent` section targets agents in `.opencode/agent` and the `commands` secti
 
 Invalid entries are logged and skipped. Restart OpenCode after changing `models.json` so the config hook runs again.
 
-Actually Opencode v1 is supported.
+## OpenCode v2
+
+OpenCode v2 requires Effect plugins to export a definition object. The v2 implementation lives on the [`v2`](https://github.com/RainingDaemons/opencode-models-manager/tree/v2) branch and will be published as `opencode-models-manager@2`.
+
+Use the v2 configuration key (`plugins`, plural):
+
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugins": ["opencode-models-manager@2"]
+}
+```
+
+Agent models in `.opencode/models.json` are supported. OpenCode v2 currently exposes an add-only command transform API, so it cannot update models on commands that were loaded from `.opencode/commands`; command entries are logged and skipped.

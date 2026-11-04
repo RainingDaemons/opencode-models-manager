@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs"
 import path from "node:path"
-import type { Plugin } from "@opencode-ai/plugin"
+import { Model, Plugin } from "@opencode/plugin/effect"
+import { Effect } from "effect"
 
 const CONFIG_FILE = path.join(".opencode", "models.json")
 
@@ -49,7 +50,7 @@ function loadSection(
   return models
 }
 
-function loadModels(file: string): Models | null {
+export function loadModels(file: string): Models | null {
   let raw: string
   try {
     raw = readFileSync(file, "utf8")
@@ -102,30 +103,36 @@ function loadModels(file: string): Models | null {
   return models
 }
 
-export default (async ({ directory, worktree }) => ({
-  config: async (cfg) => {
-    const root = worktree || directory
-    const models = loadModels(path.join(root, CONFIG_FILE)) ??
-      (root === directory ? null : loadModels(path.join(directory, CONFIG_FILE)))
-    if (!models) return
+/**
+ * OpenCode v2 effect plugin.
+ *
+ * The v2 command API can only add commands; it cannot amend commands loaded
+ * from configuration. Agent models remain fully supported through its agent
+ * transform API.
+ */
+export default Plugin.define({
+  id: "opencode-models-manager",
+  effect: (ctx) =>
+    Effect.gen(function* () {
+      const file = path.join(ctx.location.directory, CONFIG_FILE)
+      const models = loadModels(file)
+      if (!models) return
 
-    if (Object.keys(models.agent).length > 0) {
-      cfg.agent ??= {}
-      for (const [name, model] of Object.entries(models.agent)) {
-        cfg.agent[name] = { ...cfg.agent[name], model }
+      if (Object.keys(models.agent).length > 0) {
+        yield* ctx.agent.transform((editor) => {
+          for (const [name, model] of Object.entries(models.agent)) {
+            editor.update(name, (agent) => {
+              agent.model = Model.Ref.parse(model)
+            })
+          }
+        })
+        yield* ctx.agent.reload()
       }
-    }
 
-    if (Object.keys(models.command).length > 0) {
-      cfg.command ??= {}
-      for (const [name, model] of Object.entries(models.command)) {
-        const command = cfg.command[name]
-        if (!command) {
-          console.error(`[model-manager] command "${name}" was not found`)
-          continue
-        }
-        cfg.command[name] = { ...command, model }
+      if (Object.keys(models.command).length > 0) {
+        console.error(
+          `[model-manager] ${file} contains command models, but OpenCode v2 does not support updating existing command definitions; those entries were skipped`
+        )
       }
-    }
-  },
-})) satisfies Plugin
+    }),
+})
