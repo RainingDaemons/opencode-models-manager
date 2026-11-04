@@ -83,4 +83,4 @@ Use the v2 configuration key (`plugins`, plural):
 }
 ```
 
-Agent models in `.opencode/models.json` are supported. OpenCode v2 currently exposes an add-only command transform API, so it cannot update models on commands that were loaded from `.opencode/commands`; command entries are logged and skipped.
+Agent models in `.opencode/models.json` are applied through the agent transform API. Command models are applied by registering command overrides through the v2 add-only command API; the runtime must expose both `ctx.command.transform` and `ctx.session.prompt`.
