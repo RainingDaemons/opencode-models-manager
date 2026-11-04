@@ -19,23 +19,37 @@ This repo was created to provide a simple solution for managing AI models for ev
 
 ## Installation
 
-The `main` branch is the OpenCode v1 line and requires OpenCode 1.18.0 or later. It is not compatible with OpenCode v2.
+If you have OpenCode 1.18.0 or later, install the plugin with:
 
 ```
-opencode plugin opencode-models-manager@0.1.1
+opencode plugin add opencode-models-manager@opencode-v1
 ```
 
-For OpenCode v2, use the `v2` branch until the 2.x package release is published.
+If you want the plugin for OpenCode v2, install it with:
+
+```
+opencode plugin add opencode-models-manager@latest
+```
 
 Restart OpenCode after installation.
 
 ## Manual installation
 
-Add to `~/.config/opencode/opencode.json` (global) or `opencode.json` (project):
+Add to `~/.config/opencode/opencode.json` (global) or `opencode.json` (project).
+
+For OpenCode 1.18.0 or later:
 
 ```json
 {
-  "plugin": ["opencode-models-manager@0.1.1"]
+  "plugin": ["opencode-models-manager@opencode-v1"]
+}
+```
+
+For OpenCode v2:
+
+```json
+{
+  "plugins": ["opencode-models-manager@latest"]
 }
 ```
 
@@ -72,14 +86,14 @@ Invalid entries are logged and skipped. Restart OpenCode after changing `models.
 
 ## OpenCode v2
 
-OpenCode v2 requires a default plugin definition object. The v2 implementation lives on the [`v2`](https://github.com/RainingDaemons/opencode-models-manager/tree/v2) branch and is versioned as `0.2.0`.
+OpenCode v2 requires a default plugin definition object. The v2 implementation is published on the `latest` dist-tag (currently the `0.2.x` line).
 
 Use the v2 configuration key (`plugins`, plural):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugins": ["opencode-models-manager@0.2.0"]
+  "plugins": ["opencode-models-manager@latest"]
 }
 ```
 
