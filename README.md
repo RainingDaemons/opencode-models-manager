@@ -72,14 +72,14 @@ Invalid entries are logged and skipped. Restart OpenCode after changing `models.
 
 ## OpenCode v2
 
-OpenCode v2 requires Effect plugins to export a definition object. The v2 implementation lives on the [`v2`](https://github.com/RainingDaemons/opencode-models-manager/tree/v2) branch and will be published as `opencode-models-manager@2`.
+OpenCode v2 requires a default plugin definition object. The v2 implementation lives on the [`v2`](https://github.com/RainingDaemons/opencode-models-manager/tree/v2) branch and is versioned as `0.2.0`.
 
 Use the v2 configuration key (`plugins`, plural):
 
 ```json
 {
   "$schema": "https://opencode.ai/config.json",
-  "plugins": ["opencode-models-manager@2"]
+  "plugins": ["opencode-models-manager@0.2.0"]
 }
 ```
 

@@ -1,7 +1,5 @@
 import { readFileSync } from "node:fs"
 import path from "node:path"
-import { Model, Plugin } from "@opencode/plugin/effect"
-import { Effect } from "effect"
 
 const CONFIG_FILE = path.join(".opencode", "models.json")
 
@@ -26,6 +24,14 @@ function isModelRef(value: string): boolean {
 
 function isEntryName(name: string): boolean {
   return name.trim() !== ""
+}
+
+function parseModelRef(value: string): { providerID: string; id: string } {
+  const separator = value.indexOf("/")
+  return {
+    providerID: value.slice(0, separator),
+    id: value.slice(separator + 1),
+  }
 }
 
 function loadSection(
@@ -104,35 +110,33 @@ export function loadModels(file: string): Models | null {
 }
 
 /**
- * OpenCode v2 effect plugin.
+ * OpenCode v2 setup plugin.
  *
- * The v2 command API can only add commands; it cannot amend commands loaded
- * from configuration. Agent models remain fully supported through its agent
- * transform API.
+ * This intentionally has no package imports beyond Node built-ins: OpenCode
+ * 2.0 resolves local and package plugins independently of its own SDK modules.
  */
-export default Plugin.define({
+export default {
   id: "opencode-models-manager",
-  effect: (ctx) =>
-    Effect.gen(function* () {
-      const file = path.join(ctx.location.directory, CONFIG_FILE)
-      const models = loadModels(file)
-      if (!models) return
+  async setup(ctx: any) {
+    const file = path.join(process.cwd(), CONFIG_FILE)
+    const models = loadModels(file)
+    if (!models) return
 
-      if (Object.keys(models.agent).length > 0) {
-        yield* ctx.agent.transform((editor) => {
-          for (const [name, model] of Object.entries(models.agent)) {
-            editor.update(name, (agent) => {
-              agent.model = Model.Ref.parse(model)
-            })
-          }
-        })
-        yield* ctx.agent.reload()
-      }
+    if (Object.keys(models.agent).length > 0) {
+      await ctx.agent.transform((editor: any) => {
+        for (const [name, model] of Object.entries(models.agent)) {
+          editor.update(name, (agent: any) => {
+            agent.model = parseModelRef(model)
+          })
+        }
+      })
+      await ctx.agent.reload()
+    }
 
-      if (Object.keys(models.command).length > 0) {
-        console.error(
-          `[model-manager] ${file} contains command models, but OpenCode v2 does not support updating existing command definitions; those entries were skipped`
-        )
-      }
-    }),
-})
+    if (Object.keys(models.command).length > 0) {
+      console.error(
+        `[model-manager] ${file} contains command models, but OpenCode v2 does not support updating existing command definitions; those entries were skipped`
+      )
+    }
+  },
+}

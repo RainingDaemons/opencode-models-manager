@@ -3,7 +3,6 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import path from "node:path"
 import { afterEach, beforeEach, describe, it } from "node:test"
-import { Effect } from "effect"
 import plugin, { loadModels } from "../src/models.ts"
 
 type Agent = { model?: { id: string; providerID: string }; prompt?: string }
@@ -30,21 +29,26 @@ function writeModels(contents: unknown): void {
 }
 
 async function runPlugin(agents: Record<string, Agent>): Promise<void> {
+  const previousDirectory = process.cwd()
   const context = {
-    location: { directory: root },
     agent: {
       transform: (transform: (editor: { update: (id: string, update: (agent: Agent) => void) => void }) => void) =>
-        Effect.sync(() => transform({ update: (id, update) => agents[id] && update(agents[id]) })),
-      reload: () => Effect.void,
+        Promise.resolve(transform({ update: (id, update) => agents[id] && update(agents[id]) })),
+      reload: () => Promise.resolve(),
     },
   }
-  await Effect.runPromise(Effect.scoped(plugin.effect(context as never)))
+  process.chdir(root)
+  try {
+    await plugin.setup(context)
+  } finally {
+    process.chdir(previousDirectory)
+  }
 }
 
 describe("OpenCode v2 models plugin", () => {
   it("exports the v2 plugin definition required by the server loader", () => {
     assert.equal(plugin.id, "opencode-models-manager")
-    assert.equal(typeof plugin.effect, "function")
+    assert.equal(typeof plugin.setup, "function")
   })
 
   it("updates an existing agent while preserving its other settings", async () => {
